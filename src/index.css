@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Montserrat", sans-serif;
   margin: 0;
@@ -6,4 +10,11 @@ body {
   background-repeat: no-repeat;
   background-position: top center;
   background-size: auto;
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
