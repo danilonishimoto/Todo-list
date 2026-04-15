@@ -3,13 +3,15 @@ import { TextInput } from "../TextInput";
 import './todo-form.style.css'
 
 
-export function ToDoForm({onSubmit}) {
+export function ToDoForm({onSubmit, defaultValue}) {
   return (
     <form className="dialog-form" action={onSubmit}>
       <TextInput
       name="description" 
       required
-      placeholder="Digite o item que deseja adicionar" />
+      placeholder="Digite o item que deseja adicionar" 
+      defaultValue={defaultValue}
+      />
       <Button>Salvar item</Button>
     </form>
   );

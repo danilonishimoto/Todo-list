@@ -1,66 +1,95 @@
 import TodoContext from "./TodoContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function TodoProvider({children}) {
+const TODOS = "todos";
 
-  const [todos, setTodos] = useState([
-      {
-        id: 1,
-        description: "JSX e componentes",
-        completed: true,
-        createdAt: "2022-10-31",
-      },
-      {
-        id: 2,
-        description: "Props, state e hooks",
+export function TodoProvider({ children }) {
+  const savedTodo = localStorage.getItem(TODOS);
+
+  const [todos, setTodos] = useState(savedTodo ? JSON.parse(savedTodo) : []);
+
+  const [showDialog, setShowDialog] = useState(false);
+
+  const [selectedTodo, setSelectedTodo] = useState();
+
+  const openFormTodoDialog = (todo) => {
+    if (todo) {
+      setSelectedTodo(todo);
+    }
+    setShowDialog(true);
+  };
+
+  const closeFormTodoDialog = () => {
+    setShowDialog(false);
+    setSelectedTodo(null);
+  };
+
+  useEffect(() => {
+    localStorage.setItem(TODOS, JSON.stringify(todos));
+  }, [todos]);
+
+  const addTodo = (formData) => {
+    const description = formData.get("description");
+    setTodos((prevState) => {
+      const todo = {
+        id: prevState.length + 1,
+        description,
         completed: false,
-        createdAt: "2022-10-31",
-      },
-    ]);
+        createdAt: new Date().toISOString(),
+      };
+      return [...prevState, todo];
+    });
+  };
 
-    const addTodo = (formData) => {
-      const description = formData.get('description')
-      setTodos(prevState => {
-        const todo = {
-          id: prevState.length + 1,
-          description,
-          completed: false,
-          createdAt: new Date().toISOString()
+  const toggleTodoCompleted = (todo) => {
+    setTodos((prevState) => {
+      return prevState.map((t) => {
+        if (t.id === todo.id) {
+          return {
+            ...t,
+            completed: !t.completed,
+          };
         }
-        return [...prevState, todo]
-      })
-    };
-  
-    const toggleTodoCompleted = (todo) => {
-      setTodos(prevState => {
-        return prevState.map(t => {
-          if(t.id === todo.id) {
-            return {
-              ...t,
-              completed: !t.completed
-            }
-          }
-          return t; 
-        })
-      }
-    )
-    }
-  
-    const removeTodo = (todo) => {
-      setTodos(prevState => {
-        return prevState.filter(t => t.id !== todo.id)
-      })
-    }
+        return t;
+      });
+    });
+  };
+
+  const editTodo = (formData) => {
+    setTodos((prevState) => {
+      return prevState.map((t) => {
+        if (t.id === selectedTodo.id) {
+          return {
+            ...t,
+            description: formData.get('description'),
+          };
+        }
+        return t;
+      });
+    });
+  }
+
+  const removeTodo = (todo) => {
+    setTodos((prevState) => {
+      return prevState.filter((t) => t.id !== todo.id);
+    });
+  };
 
   return (
     <TodoContext
       value={{
-        todos, 
-        addTodo, toggleTodoCompleted,
-        removeTodo
+        todos,
+        addTodo,
+        toggleTodoCompleted,
+        removeTodo,
+        showDialog,
+        openFormTodoDialog,
+        closeFormTodoDialog,
+        selectedTodo,
+        editTodo
       }}
     >
       {children}
     </TodoContext>
-  )
+  );
 }

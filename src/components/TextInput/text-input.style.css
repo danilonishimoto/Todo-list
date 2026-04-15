@@ -13,5 +13,5 @@
 }
 
 .text-input::placeholder {
-  color: #EAEAEA;
+  color: rgba(234, 234, 234, 0.5)
 }
